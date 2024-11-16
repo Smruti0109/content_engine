@@ -27,7 +27,7 @@ This repository provides a Content Engine for analyzing and comparing multiple P
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/content-engine-pdf-comparison.git
+   git clone https://github.com/Smruti0109/content_engine.git
    cd content-engine-pdf-comparison
 
 2. **Install dependencies:**
