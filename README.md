@@ -30,21 +30,26 @@ This repository provides a Content Engine for analyzing and comparing multiple P
    git clone https://github.com/your-username/content-engine-pdf-comparison.git
    cd content-engine-pdf-comparison
 
-cd content-engine-pdf-comparison
-Install dependencies:
-pip install -r requirements.txt
-Run the application:
-streamlit run app.py
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
 
-# Technical Stack
-Backend Framework: LangChain – A toolkit for building LLM applications with a focus on retrieval-augmented generation (RAG).
-Frontend Framework: Streamlit – For building the web interface and user interaction.
-Vector Store: FAISS – For efficiently storing and querying document embeddings.
-Embedding Model: Sentence-Transformers from Hugging Face – A local embedding model used to generate vector representations of document content.
-Local LLM: Hugging Face's DialoGPT – A local model for generating answers and insights from document content.
+3. **Run the application:**
+   ```bash
+   streamlit run app.py
+   
+## Technical Stack
 
-# Acknowledgements
-LangChain for the powerful toolkit to build the retrieval system.
-Streamlit for simplifying the creation of web interfaces.
-Hugging Face for their transformer models and tools.
-PyMuPDF for efficient PDF text extraction.
+- **Backend Framework**: [LangChain](https://github.com/hwchase17/langchain) – A toolkit for building LLM applications with a focus on retrieval-augmented generation (RAG).
+- **Frontend Framework**: [Streamlit](https://streamlit.io/) – For building the web interface and user interaction.
+- **Vector Store**: [FAISS](https://faiss.ai/) – For efficiently storing and querying document embeddings.
+- **Embedding Model**: [Sentence-Transformers](https://www.sbert.net/) from Hugging Face – A local embedding model used to generate vector representations of document content.
+- **Local LLM**: [Hugging Face's DialoGPT](https://huggingface.co/microsoft/DialoGPT-medium) – A local model for generating answers and insights from document content.
+
+## Acknowledgements
+
+- [LangChain](https://github.com/hwchase17/langchain) for the powerful toolkit to build the retrieval system.
+- [Streamlit](https://streamlit.io/) for simplifying the creation of web interfaces.
+- [Hugging Face](https://huggingface.co/) for their transformer models and tools.
+- [PyMuPDF](https://pymupdf.readthedocs.io/) for efficient PDF text extraction.
+
