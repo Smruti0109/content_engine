@@ -33,21 +33,22 @@ css = """
         .send-button:hover { background-color: #45a049; }
     </style>
 """
+
 def load_huggingface_model(model_name="google/flan-t5-large"):
     try:
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
         device = 0 if torch.cuda.is_available() else -1
-        
+
         hf_pipeline = pipeline(
             "text2text-generation",
             model=model,
             tokenizer=tokenizer,
             device=device,
-            max_length=800,  # Increase max length to allow for longer outputs
-            max_new_tokens=800  # Adjust as needed
+            max_length=1500,  # Increase max length to allow for longer outputs
+            max_new_tokens=1500  # Adjust as needed
         )
-        
+
         # Wrap in LangChain's HuggingFacePipeline for LLMChain compatibility
         return HuggingFacePipeline(pipeline=hf_pipeline)
 
@@ -94,15 +95,13 @@ def get_vectorstore(text_chunks):
         return load_vectorstore(cache_path)
 
     st.info("Generating new vectorstore...")
-    
-    # Parallelize the embedding generation for chunks
-    with ThreadPoolExecutor() as executor:
-        embeddings_list = list(executor.map(embeddings.embed, text_chunks))
-
-    vectorstore = FAISS.from_embeddings(embeddings_list)
+    vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     retriever = vectorstore.as_retriever()
 
-    # Save the vectorstore for later use
+    # Print retrieved documents for debugging
+    retrieved_docs = retriever.get_relevant_documents("What is house credit default?")
+    st.write("Retrieved documents:", retrieved_docs)  # Debug the result
+
     save_vectorstore(vectorstore, cache_path)
     return vectorstore
 
@@ -110,7 +109,6 @@ def save_vectorstore(vectorstore, filepath):
     with open(filepath, "wb") as f:
         pickle.dump(vectorstore, f)
 
-@st.cache_data
 def load_vectorstore(filepath):
     with open(filepath, "rb") as f:
         return pickle.load(f)
@@ -118,7 +116,7 @@ def load_vectorstore(filepath):
 def get_conversation_chain(vectorstore, hf_pipeline):
     memory = ConversationBufferMemory(memory_key="chat_history", output_key="answer", return_messages=True)
     retriever = vectorstore.as_retriever()
-    
+
     # Use return_source_documents=True to see what documents are retrieved
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=hf_pipeline,
@@ -144,7 +142,6 @@ def get_pdf_text_and_metadata(pdf_docs):
 
     st.info(f"PDF text extraction and metadata retrieval completed in {time.time() - start_time:.2f} seconds.")
     return all_text, all_metadata
-
 
 def render_answer(answer_text):
     """Format long answers properly."""
@@ -186,7 +183,7 @@ def handle_userinput():
     try:
         # Formulate a query that requests a full, detailed answer
         query = f"Please provide a full and detailed answer to this question based on the document: {user_question}"
-        
+
         # Process the question using the conversation chain
         response = conversation_chain(query)
         answer_text = response.get('answer', '').strip()
@@ -241,7 +238,6 @@ def main():
         st.write('</div>', unsafe_allow_html=True)
         st.write('</div>', unsafe_allow_html=True)
 
-
     with st.sidebar:
         st.subheader("Your documents")
         pdf_docs = st.file_uploader("Upload your PDFs here and click on 'Process'", type=["pdf"], accept_multiple_files=True)
@@ -253,12 +249,12 @@ def main():
                 # Get text chunks and generate vectorstore
                 text_chunks = get_text_chunks(raw_text)
                 vectorstore = get_vectorstore(text_chunks)
-                
+
                 # Initialize conversation chain
                 st.session_state.conversation = get_conversation_chain(vectorstore, st.session_state.hf_pipeline)
 
                 st.success("Documents processed successfully! You can ask questions now.")
-                
+
                 # Instead of showing metadata, show a success message
                 st.info("Metadata successfully extracted.")
 
