@@ -1,4 +1,4 @@
-# Content Engine-PDF Comparison & Insights System
+# AskMyPDFs AI
 
 This repository provides a Content Engine for analyzing and comparing multiple PDF documents. Built using LangChain, Streamlit, and Hugging Face, this system leverages Retrieval-Augmented Generation (RAG) to retrieve, assess, and generate insights from documents.
 
